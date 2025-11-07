@@ -12,6 +12,8 @@
 	
 	/* Instruction SQL pour récupérer la liste des pieces adjacentes à la pièce paramétrée */
 	$sql = 'SELECT couloir.id, couloir.type FROM couloir WHERE type=:type';
+	//$sql = 'SELECT couloir.id, couloir.type FROM couloir';
+
 	
 	
 	/* Préparation de la requete et de ses paramètres */
