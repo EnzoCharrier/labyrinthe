@@ -1,0 +1,57 @@
+<?php
+
+	//Documentation php pour sqlite : https://www.php.net/manual/en/book.sqlite3.php
+	
+
+	/* Paramètres */
+	$bdd_fichier = 'labyrinthe.db';	//Fichier de la base de données
+	$type = 'depart';			//Type de couloir à lister
+	
+
+	$sqlite = new SQLite3($bdd_fichier);		//On ouvre le fichier de la base de données
+	
+	/* Instruction SQL pour récupérer la liste des pieces adjacentes à la pièce paramétrée */
+	$sql = 'SELECT couloir.id, couloir.type FROM couloir WHERE type=:type';
+	$id ='SELECT couloir.id FROM couloir WHERE type=:type';
+	//$sql = 'SELECT couloir.id, couloir.type FROM couloir';
+
+	
+	
+	/* Préparation de la requete et de ses paramètres */
+	$requete = $sqlite -> prepare($sql);	
+	$requete -> bindValue(':type', $type, SQLITE3_TEXT);
+	
+	$result = $requete -> execute();	//Execution de la requête et récupération du résultat
+
+
+
+
+
+	/* On génère et on affiche notre page HTML avec la liste de nos films */
+	
+	
+	echo "<body>\n";
+	
+	while($requeteID = $result -> fetchArray(SQLITE3_ASSOC)) {
+		echo "<h1>Depart , ID - " .$requeteID['id']."  </h1>\n";
+	}
+	
+	/*
+	echo "<ul>";
+	while($couloir = $result -> fetchArray(SQLITE3_ASSOC)) {
+		echo '<li>'.$couloir['id']." (type : {$couloir['type']})</li>";
+	}
+	echo "</ul>";
+	*/
+	
+
+
+
+	echo "</body>\n";
+	echo "</html>\n";
+	
+	
+	$sqlite -> close();			//On ferme bien le fichier de la base de données avant de terminer!
+	
+?>
+
