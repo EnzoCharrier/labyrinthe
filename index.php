@@ -2,7 +2,7 @@
 <html lang= fr>
     <head>
 	    <meta charset= "UTF-8">	
-	    <title>Liste des couloirs</title>
+	    <title>Labyrinthe</title>
     </head>
 
 
@@ -20,7 +20,8 @@
                 {
 
                     case '1': 
-                    include("pages/page1.php");
+            
+                    include("pages/pageDepart.php");
                     break;
       
                 default:
