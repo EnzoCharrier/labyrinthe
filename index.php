@@ -43,8 +43,6 @@
             while($requeteINIT = $resultINIT -> fetchArray(SQLITE3_ASSOC)) {
                     
                   $init = $requeteINIT['id']; 
-                  
-                  
             }
                     
                 
