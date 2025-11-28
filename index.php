@@ -18,7 +18,7 @@
 	    include("include/nav.php");
             
       
-        ////////      *Rajouter orientation, retester clé,rebosser btn reset et faire css/ergonomie        */////////
+        ////////      *Rajouter orientation, retester clé,rebosser btn reset et faire css/ergonomie (essayer bouton a la place de lien) (html css <a>)      */////////
 
 
             $bdd_fichier = 'labyrinthe.db';	
@@ -53,7 +53,8 @@
                 unset($_SESSION["Score"]);
                 $_SESSION["nbCle"] = 0;
             }
-                
+
+            // Permet de retourner a l'accueil     
             if ($empl == 0) {
 
                 include("pages/page0.php");
@@ -83,8 +84,6 @@
                         {
                             $_SESSION['Score'] = 0;
                         }
-
-                        //echo $_SESSION['Score'];
 
 
                         if ($empl == $requeteVerif['id']){
@@ -135,6 +134,7 @@
                             }
                         
                             echo "<h1> Vous pouvez allez dans ces direction : </h1>\n";
+                            
 
 
                             // Recuperer les direction possible si  empl = couloir2 et permettre le deplacement
@@ -208,6 +208,7 @@
                                 if ($requetePos2["type"] != "grille"){
 
                                     echo "<h1> - <a href ='index.php?couloir=".$requetePos2['couloir2']."'>".$dir." (type : ".$requetePos2['type'].")</a> </h1>";
+                                    // ex btn    echo " <input class='styled' type='button' value='".$dir."' />";
                                 }
                                 else if ($requetePos2["type"] == "grille" AND $_SESSION['nbCle'] == 0 ){
                                     echo "<h1> - ".$dir." (type :".$requetePos2['type'].")  : Fermer  </h1>";
@@ -222,6 +223,8 @@
                     }
                 }
             }
+
+
          // Fermer Base de Données
          $sqlite -> close();
          
