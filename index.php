@@ -12,7 +12,8 @@
         
 
         <?php 
-        
+        session_start();
+      
         include("include/header.php");
 	    include("include/nav.php");
             // Ouvrir Base de Données
@@ -23,6 +24,8 @@
 	        $sqlite = new SQLite3($bdd_fichier);
             $nbCle = 0;
             $empl = $_GET['couloir'];
+            $cle = "cle";
+            //$_GET['couloir'] == 0;
             
             
             
@@ -43,17 +46,21 @@
             while($requeteINIT = $resultINIT -> fetchArray(SQLITE3_ASSOC)) {
                     
                   $init = $requeteINIT['id']; 
+                  
             }
-                    
                 
-                
+            if ($empl == 0) {
+                include("pages/page0.php");
+                echo "<h1>Cliquez  <a href ='index.php?couloir=".$init."'> ici </a> pour jouer </h1>";
+            }
+            else {    
 
-            if (isset($_GET['couloir']) == $empl)
-            {
+                if (isset($empl) == $init)
+                {
              
             
-            //Verifier si le type = sortie et change de page dans ce cas
-            $verifPartie='SELECT couloir.id,couloir.type FROM couloir WHERE couloir.type =:typeSortie';
+                //Verifier si le type = sortie et change de page dans ce cas
+                $verifPartie='SELECT couloir.id,couloir.type FROM couloir WHERE couloir.type =:typeSortie';
                 $requeteVerif = $sqlite -> prepare($verifPartie);	
 	            $requeteVerif -> bindValue(':typeSortie', $typeSortie, SQLITE3_TEXT);
 	            $resultVerif = $requeteVerif -> execute();
@@ -69,65 +76,51 @@
                      else
                     {
 
+
+
+                        $posCle='SELECT count(id), type type FROM couloir WHERE type=:cle'; // requete pour savoir le nombre de clé presente dans le labyrinthe
+                        $requetePosCle = $sqlite -> prepare($posCle);	
+	                    $requetePosCle -> bindValue(':cle', $cle,SQLITE3_TEXT);
+	                    $resultPosCle = $requetePosCle -> execute();
+                        
+
+                        while($requetePosCle = $resultPosCle -> fetchArray(SQLITE3_ASSOC)) {
+                                $cleLimit = $requetePosCle["count(id)"];
+                       
+                        }
+
                         // Donne l'emplacement actuel
                         $emplacement='SELECT couloir.id,couloir.type FROM couloir WHERE couloir.id =:empl';
                         $requete = $sqlite -> prepare($emplacement);	
 	                    $requete -> bindValue(':empl', $empl, SQLITE3_TEXT);
 	                    $result = $requete -> execute();
-                    
+                        
                         while($requete = $result -> fetchArray(SQLITE3_ASSOC)) {
                             
-                            if ($requete['type'] == "cle"){
+                          
+                        if ($requete['type'] == "cle"){
                                
-                                $nbCle = 1;
+                                if (isset($_SESSION['nbCle']) AND $_SESSION['nbCle'] < $cleLimit){
+
+                                    $_SESSION['nbCle'] ++;
+                                    //$idCle = $requete['id'];
+                                }
+
+                                else
+                                {
+                                    $_SESSION['nbCle'] = 0;
+                                }
+                                
                                 
                             }
-                            
 
-                            echo "<h1>Vous etes emplacement : " .$requete['id']."(type : " .$requete['type']."), cle :".$nbCle." </h1>";
+                            echo "<h1>Vous etes emplacement : " .$requete['id']."(type : " .$requete['type']."), cle :".$_SESSION['nbCle']." </h1>";
                             
                         }
                         
 
-                        /*
-                        while (){
-                            // Recuperer les voisin de couloir2 si couloir2 = id
-                            $voisinDeCouloir2='SELECT couloir1, couloir2 FROM passage WHERE passage.couloir2=:empl'; // requete pour voir les voisin de couloir2
-                            $requeteVoisinCouloir2 = $sqlite -> prepare($voisinDeCouloir2);	
-	                        $requeteVoisinCouloir2 -> bindValue(':empl', $empl, SQLITE3_TEXT);
-	                        $resultVoisinCouloir2 = $requeteVoisinCouloir2 -> execute();
-        
-                            whil    e($requeteVoisinCouloir2 = $resultVoisinCouloir2 -> fetchArray(SQLITE3_ASSOC)) {
-
-                            //echo "<h1>Vous etes voisin de " .$requeteVoisinCouloir2['couloir1']. " </h1>";
-                            }
-                        
-
-                        
-                            // Recuperer les voisin de couloir1 si couloir1 = id
-                            $voisinDeCouloir1='SELECT couloir2, couloir1 FROM passage WHERE passage.couloir1=:empl'; // requete pour voir les voisin de couloir1
-                            $requeteVoisinCouloir1 = $sqlite -> prepare($voisinDeCouloir1);	
-	                        $req    ueteVoisinCouloir1 -> bindValue(':empl', $empl, SQLITE3_TEXT);
-	                        $resultVoisinCouloir1 = $requeteVoisinCouloir1 -> execute();
-                        
-
-                        
-                            while($requeteVoisinCouloir1 = $resultVoisinCouloir1 -> fetchArray(SQLITE3_ASSOC)) {
-
-                            if ($requeteVoisinCouloir1['couloir2'] != $empl){
-
-                               // echo "<h1> Vous etes voisin de  ".$requeteVoisinCouloir1['couloir2']."  </h1>";
-
-                            }
-
-                            }
-                        */
-                        
-
 
                         echo "<h1> Vous pouvez allez dans ces direction : </h1>\n";
-
-
 
 
                         // Recuperer les direction possible si couloir2 = id et permettre le deplacement
@@ -139,8 +132,18 @@
 
                         while($requetePos1 = $resultPos1 -> fetchArray(SQLITE3_ASSOC)) {
               
-                            echo "<h1> -  <a href ='index.php?couloir=".$requetePos1['couloir1']."' </a>".$requetePos1['position1']."  type (".$requetePos1['type'].") </h1>";
-                            
+                            if ($requetePos1["type"] != "grille"){
+
+                                echo "<h1> - <a href ='index.php?couloir=".$requetePos1['couloir1']."'>".$requetePos1['position1']." type (".$requetePos1['type'].")</a> </h1>";    
+                            }
+                            else if ($requetePos1["type"] == "grille" AND $_SESSION['nbCle'] == 0 ){
+                                echo "<h1> - ".$requetePos1['position1']." type (".$requetePos1['type'].") Vous ne pouvez pas passer sans cle  </h1>";
+                            }
+
+                            else {
+                                echo "<h1> - <a href ='index.php?couloir=".$requetePos1['couloir1']."'>".$requetePos1['position1']." type (".$requetePos1['type'].")</a> </h1>";
+                                $_SESSION['nbCle'] --; 
+                            }
                         }     
           
 
@@ -151,9 +154,20 @@
 	                    $resultPos2 = $requetePos2 -> execute();
 
                         while($requetePos2 = $resultPos2 -> fetchArray(SQLITE3_ASSOC)) {
-                            echo "<h1> - <a href ='index.php?couloir=".$requetePos2['couloir2']."'</a>".$requetePos2['position2']." type (".$requetePos2['type'].")  </h1>";
-                        }
 
+                            if ($requetePos2["type"] != "grille"){
+
+                                echo "<h1> - <a href ='index.php?couloir=".$requetePos2['couloir2']."'>".$requetePos2['position2']." type (".$requetePos2['type'].")</a> </h1>";
+                            }
+                            else if ($requetePos2["type"] == "grille" AND $_SESSION['nbCle'] == 0 ){
+                                echo "<h1> - ".$requetePos2['position2']." type (".$requetePos2['type'].") Vous ne pouvez pas passer sans cle  </h1>";
+                            }
+
+                            else {
+                                echo "<h1> - <a href ='index.php?couloir=".$requetePos2['couloir2']."'>".$requetePos2['position2']." type (".$requetePos2['type'].")</a> </h1>";
+                                $_SESSION['nbCle'] --; 
+                            }
+                        }
 
 
 
@@ -161,6 +175,8 @@
                     }
                 }
             }
+            }
+            
 
          // Fermer Base de Données
          $sqlite -> close();
