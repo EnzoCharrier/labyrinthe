@@ -18,7 +18,7 @@
 	    include("include/nav.php");
             
       
-        //////////*Rajouter orientation, retester clé et faire css/ergonomie*/////////
+        ////////      *Rajouter orientation, retester clé,rebosser btn reset et faire css/ergonomie        */////////
 
 
             $bdd_fichier = 'labyrinthe.db';	
