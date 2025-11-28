@@ -47,12 +47,16 @@
 
                 $empl = $init;
                 $_SESSION['nbCle'] = 0;
+                unset($_SESSION["Score"]);
+                $_SESSION["nbCle"] = 0;
             }
                 
             if ($empl == 0) {
 
                 include("pages/page0.php");
                 echo "<h1> <a href ='index.php?couloir=".$init."'> Jouer</a></h1>";
+                unset($_SESSION["Score"]);
+                $_SESSION["nbCle"] = 0;
             }
 
             else {    
@@ -67,10 +71,25 @@
 
                     while($requeteVerif = $resultVerif -> fetchArray(SQLITE3_ASSOC)) {
 
+                        // Gestion de score de deplacement
+                        if (isset($_SESSION['Score'])){
+
+                            $_SESSION['Score'] ++;
+                        }
+                        else
+                        {
+                            $_SESSION['Score'] = 0;
+                        }
+
+                        //echo $_SESSION['Score'];
+
+
                         if ($empl == $requeteVerif['id']){
 
                             include("pages/pageFin.php");
                             echo "<h1><a href ='index.php?couloir=".$init."'>  Recommencer</a></h1>";
+                            echo " <h1> Score :".$_SESSION['Score']."</h1>";
+                            unset($_SESSION["Score"]);
                         }
 
                         else
@@ -101,9 +120,8 @@
                                
                                     if (isset($_SESSION['nbCle']) AND $_SESSION['nbCle'] < $cleLimit){
 
-                                        $_SESSION['nbCle'] ++;
+                                        $_SESSION['nbCle'] = 1;
                                     }
-
                                     else
                                     {
                                         $_SESSION['nbCle'] = 0;
