@@ -36,12 +36,18 @@
 	        $resultINIT = $requeteINIT -> execute();                        //
 
 
-            //  Recuperer la valeur de l'id de la position de depart
+            // Recuperer la valeur de l'id de la position de depart
             while($requeteINIT = $resultINIT -> fetchArray(SQLITE3_ASSOC)) {
                     
                   $init = $requeteINIT['id'];                   
             }
 
+            // Bouton Reset permet de revenir a la position de depart
+            if ($empl == -1) {
+
+                $empl = $init;
+                $_SESSION['nbCle'] = 0;
+            }
                 
             if ($empl == 0) {
 
@@ -53,7 +59,7 @@
 
                 if (isset($empl) == $init)
                 {
-                    //Verifier si le type = sortie et change de page dans ce cas
+                    // Verifier si le type = sortie et change de page dans ce cas
                     $verifPartie='SELECT couloir.id,couloir.type FROM couloir WHERE couloir.type =:typeSortie';
                     $requeteVerif = $sqlite -> prepare($verifPartie);	
 	                $requeteVerif -> bindValue(':typeSortie', $typeSortie, SQLITE3_TEXT);
@@ -64,7 +70,7 @@
                         if ($empl == $requeteVerif['id']){
 
                             include("pages/pageFin.php");
-                            echo "<h1><a href ='index.php?couloir=13'>  Recommencer</a></h1>";
+                            echo "<h1><a href ='index.php?couloir=".$init."'>  Recommencer</a></h1>";
                         }
 
                         else
@@ -132,6 +138,9 @@
                                     case "E" :
                                         $dir = "Droite";
                                         break;
+                                    case "C" :
+                                        $dir = "Passage Secret";
+                                        break;
                                 }
               
                                 if ($requetePos1["type"] != "grille"){
@@ -169,6 +178,9 @@
                                         break;
                                     case "E" :
                                         $dir = "Droite";
+                                        break;
+                                    case "C" :
+                                        $dir = "Passage Secret";
                                         break;
                                 }
 
