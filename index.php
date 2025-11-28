@@ -18,6 +18,9 @@
 	    include("include/nav.php");
             
       
+        //////////*Rajouter orientation, retester clé et faire css/ergonomie*/////////
+
+
             $bdd_fichier = 'labyrinthe.db';	
 	        $type = "depart";
             $typeSortie = "sortie";
@@ -219,8 +222,6 @@
                     }
                 }
             }
-            
-
          // Fermer Base de Données
          $sqlite -> close();
          
